@@ -1,3 +1,7 @@
+require "open-uri"
+require "JSON"
+require "pry"
+
 class DrinkAPI
   attr_reader :id_array
   def initialize
@@ -11,7 +15,7 @@ class DrinkAPI
 
   def make_hash
     self.id_array.each.with_object({}) do |id, drink_hash|
-      drink_hash[id] = JSON.parse(open("https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=#{id}").read).values.first
+      drink_hash[id] = JSON.parse(open("https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=#{id}").read).values.first[0]
     end
   end
 end

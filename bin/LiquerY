@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "LiquerY"
+require "open-uri"
+require "pry"
+
+LiquerY::CLI.new.call

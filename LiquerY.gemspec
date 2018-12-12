@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
     spec.metadata["allowed_push_host"] = "http://mygemserver.com"
 
     spec.metadata["homepage_uri"] = spec.homepage
-    spec.metadata["source_code_uri"] = "https://github.com/aaj3f/LiquerY"
+    spec.metadata["source_code_uri"] = "https://rubygems.org"
     spec.metadata["changelog_uri"] = "https://github.com/aaj3f/LiquerY/commits/master"
   else
     raise "RubyGems 2.0 or newer is required to protect against " \
@@ -39,4 +39,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "pry"
+  # spec.add_development_dependency "open-uri"
 end
