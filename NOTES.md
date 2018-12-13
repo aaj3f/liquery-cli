@@ -1,13 +1,28 @@
-Main Menu
 
-Choose the drink, by number, that you enjoy the most!
-  select drink by number, find value for alcohol
-  select all drinks in list with same alcohol
-  sample three of them
-  puts to user, "do you also enjoy any of these drinks?"
-  add all ingredients of ENJOYED DRINKS to an array
-  probably .uniq it
 
-  build algorithm that can:
-    search all drinks to see if any contain ALL the ingredients of enjoyed drinks
-    if not, search all drinks to see if any contain ALL - 1, etc.
+
+Need to make:
+  User class
+    that can:
+      instantiate individual users -- X
+        that can:
+          save desired and undesired drinks as instance variables -- X
+          save the quiz recommendation as an instance variable
+      remember all users as class variable
+  Flavor Profile class:
+    that can:
+      instantiate individual flavor profiles
+        that can:
+          "have-many" drinks and "belong-to" drinks
+          "belong-to" users, who will "have-many" flavor profiles
+
+
+Need to modify:
+  Drink class
+    so that it can:
+      be searchable by drink name
+      list drinks by alcohol
+      list drinks by flavor profiles
+  CLI class
+    so that it can:
+      call individual methods within the quiz, rather than run through a huge block of code
