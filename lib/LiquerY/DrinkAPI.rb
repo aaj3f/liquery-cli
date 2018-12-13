@@ -8,8 +8,8 @@ class DrinkAPI
     data = open("https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=Cocktail").read
     doc = JSON.parse(data)
     #key is ["drinks"] value is array of ingredients
-    @id_array = doc.first.last.each.with_object([]) do |d, array|
-      array << d["idDrink"]
+    @id_array = doc.first.last.each.with_object([]) do |id_hash, array|
+      array << id_hash["idDrink"]
     end
   end
 

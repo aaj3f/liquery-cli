@@ -4,5 +4,7 @@ require "bundler/setup"
 require "LiquerY"
 require "open-uri"
 require "pry"
+require "colorize"
+require "colorized_string"
 
 LiquerY::CLI.new.call
