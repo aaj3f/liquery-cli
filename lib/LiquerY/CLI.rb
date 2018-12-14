@@ -7,7 +7,6 @@ class LiquerY::CLI
     welcome
     compile
     main_menu
-    drink_quiz
   end
 
   def welcome
@@ -37,20 +36,53 @@ class LiquerY::CLI
     spinner = ::TTY::Spinner.new("                  [:spinner]".light_blue, format: :bouncing)
     spinner.auto_spin
     Drink.new_from_hash#(DrinkAPI.new.make_hash)
-    spinner.stop('Done!'.light_blue)
+    spinner.stop('Done!'.cyan)
   end
 
   def main_menu
-    puts "\nAre you ready to take our quiz? [Press Enter to begin]..."
-    STDIN.getch
+    if !(User.current_user)
+      puts "\nIt seems that you're here for the first time!".light_blue
+      puts "To start, we'll have you begin by taking our quiz,".light_blue
+      puts "so that we can get a sense for your likes & dislikes!".light_blue
+      self.drink_quiz
+    else
+      puts "\nNow that you've completed our quiz, we have a few".cyan
+      puts "other services that may be helpful to you!".cyan
+      self.list_menu_options
+    end
+  end
+
+  def list_menu_options
+    puts "\n\t1. See a list of your liked & recommended drinks".light_blue
+    puts "\t2. Search our entire repertoire of cocktails".light_blue
+    puts "\t3. Take our quiz again to update your preferences".light_blue
+    puts "[Or enter 'exit' to leave the app...]"
+    input = gets.chomp
+    case input
+    when "1"
+      self.list_liked_drinks #need to migrate from User
+    when "2"
+      self.list_search_options #need to build and build associated Drink class methods
+    when "3"
+      self.drink_quiz
+    when "exit"
+      self.exit #need to build
+    else
+      puts "Whoops, we don't recognize that option..."
+      self.list_menu_options
+    end
   end
 
   def drink_quiz
-    User.new
+    puts "\nAre you ready to take our quiz? [Press Enter to begin]..."
+    STDIN.getch
+
+    User.current_user || User.new
     self.offer_main_test
     self.offer_sub_test
 
-    puts "\nJust a few more questions! [Press Enter to continue]..."
+    puts "\nDepending on your answers, we may have a few"
+    puts "more questions for you... [Press Enter to continue]"
     STDIN.getch
 
     self.test_dislikes
@@ -64,6 +96,9 @@ class LiquerY::CLI
 
     self.return_quiz_results
 
+    puts "\nWe're ready to return to the main menu! [Press Enter to continue]..."
+    STDIN.getch
+    self.main_menu
   end
 
   def offer_main_test
@@ -97,20 +132,22 @@ class LiquerY::CLI
   end
 
   def test_dislikes
-    puts "\nGiven the cocktails you've identified so far, we're noticing".cyan #3. test for dislikes
-    puts "that you might not enjoy the palates of some of these drinks:".cyan
     bad_drinks = Drink.select_for_test.select do |drink|
       (drink.all_ingredients & User.current_user.liked_ingrdients).empty?
     end
-    bad_drinks.each.with_index(1) {|x, i| puts "\t#{i}. #{x.strDrink}"}
-    puts "Is there one drink on this list that you absolutely cannot stand?".cyan
-    begin
-      print "Your choice: ".cyan
-      input = gets.chomp
-    end until self.safe_input?(input, bad_drinks) == true
-    User.current_user.disliked_drinks << bad_drinks[input.to_i - 1]
-    puts "\nBlech! You just do not enjoy #{User.current_user.disliked_drinks[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.disliked_drinks[-1].strDrink}.".light_blue
-    puts "We hear you! And that's great to know!".light_blue
+    unless bad_drinks.empty?
+      puts "\nGiven the cocktails you've identified so far, we're noticing".cyan #3. test for dislikes
+      puts "that you might not enjoy the palates of some of these drinks:".cyan
+      bad_drinks.each.with_index(1) {|x, i| puts "\t#{i}. #{x.strDrink}"}
+      puts "Is there one drink on this list that you absolutely cannot stand?".cyan
+      begin
+        print "Your choice: ".cyan
+        input = gets.chomp
+      end until self.safe_input?(input, bad_drinks) == true
+      User.current_user.disliked_drinks << bad_drinks[input.to_i - 1]
+      puts "\nBlech! You just do not enjoy #{User.current_user.disliked_drinks[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.disliked_drinks[-1].strDrink}.".light_blue
+      puts "We hear you! And that's great to know!".light_blue
+    end
   end
 
   def calculate_okay_drinks

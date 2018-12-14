@@ -1,15 +1,8 @@
-TODO:
-Refactor the CLI, it's horrendous
+
 
 
 Need to make:
-  User class
-    that can:
-      instantiate individual users -- X
-        that can:
-          save desired and undesired drinks as instance variables -- X
-          save the quiz recommendation as an instance variable
-      remember all users as class variable
+  
   Flavor Profile class:
     that can:
       instantiate individual flavor profiles
