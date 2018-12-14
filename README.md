@@ -1,8 +1,6 @@
 # LiquerY
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/LiquerY`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem was built as part of a project within the Flatiron School's curriculum. LiquerY is a CLI gem that uses a few simple algorithms alongside thecocktaildb.com's API of cocktail ingredients to help the user identify their beverage preferences and learn about new and exciting cocktails. Besides offering some basic search and sort features, LiqeurY provides the user with a quiz-style interface to narrow down their preferences amongst dozens and dozens of drinks.
 
 ## Installation
 
@@ -22,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Running LiquerY will run an entirely self-contained CLI app. The user will begin with a quiz to identify their beverage preferences, and they will then have several options to explore the results of the quiz in more detail or to search the entire LiquerY database.
 
 ## Development
 
@@ -32,7 +30,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/LiquerY. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/aaj3f/LiquerY. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
