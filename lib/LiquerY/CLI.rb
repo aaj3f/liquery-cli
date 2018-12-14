@@ -34,9 +34,9 @@ class LiquerY::CLI
   end
 
   def compile
-    spinner = ::TTY::Spinner.new("                    [:spinner]".light_blue, format: :bouncing)
+    spinner = ::TTY::Spinner.new("                  [:spinner]".light_blue, format: :bouncing)
     spinner.auto_spin
-    Drink.new_from_hash(DrinkAPI.new.make_hash)
+    Drink.new_from_hash#(DrinkAPI.new.make_hash)
     spinner.stop('Done!'.light_blue)
   end
 
@@ -70,7 +70,7 @@ class LiquerY::CLI
     STDIN.getch
     puts "\nGiven the cocktails you've identified so far, we're noticing".cyan
     puts "that you might not enjoy the palates of some of these drinks:".cyan
-    good_ingredients = (drink1.all_ingredients + drink2.all_ingredients).flatten.uniq
+    good_ingredients = (user.liked_drinks.map {|d| d.all_ingredients}).flatten.uniq
     bad_drinks = a.select do |drink|
       (drink.all_ingredients & good_ingredients).empty?
     end
@@ -82,21 +82,21 @@ class LiquerY::CLI
     puts "\nBlech! You just do not enjoy #{user.disliked_drinks[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{user.disliked_drinks[-1].strDrink}.".light_blue
     puts "We hear you! And that's great to know!".light_blue
     okay_drinks = Drink.all.select do |drink|
-      if [drink1, drink2, drink3].include?(drink)
+      if (user.liked_drinks + user.disliked_drinks).include?(drink)
         false
       elsif drink.all_ingredients.size < 4
-        (drink.all_ingredients & good_ingredients).size > 0 && (drink.all_ingredients & drink3.all_ingredients).size <= 1
+        (drink.all_ingredients & good_ingredients).size > 0 && (drink.all_ingredients & user.disliked_drinks[-1].all_ingredients).size <= 1
       else
-        (drink.all_ingredients & good_ingredients).size > 1 && (drink.all_ingredients & drink3.all_ingredients).size <= 1
+        (drink.all_ingredients & good_ingredients).size > 1 && (drink.all_ingredients & user.disliked_drinks[-1].all_ingredients).size <= 1
       end
     end
     great_drinks = Drink.all.select do |drink|
-      if [drink1, drink2, drink3].include?(drink)
+      if (user.liked_drinks + user.disliked_drinks).include?(drink)
         false
       elsif drink.all_ingredients.size < 4
-        (drink.all_ingredients & good_ingredients).size > 1 && (drink.all_ingredients & drink3.all_ingredients).size <= 1
+        (drink.all_ingredients & good_ingredients).size > 1 && (drink.all_ingredients & user.disliked_drinks[-1].all_ingredients).size <= 1
       else
-        (drink.all_ingredients & good_ingredients).size > 2 && (drink.all_ingredients & drink3.all_ingredients).size <= 1
+        (drink.all_ingredients & good_ingredients).size > 2 && (drink.all_ingredients & user.disliked_drinks[-1].all_ingredients).size <= 1
       end
     end
     puts "\nThanks for completing our quiz!! Now give us just one second as"
@@ -123,7 +123,7 @@ class LiquerY::CLI
       puts "but we're still totally certain that you're going to love it!".light_blue
       puts "\n"
       puts "The #{user.quiz_results[-1].strDrink}!".center(61).cyan
-      puts "It's made with #{user.quiz_results[-1].print_ingredients}".center(59).cyan
+      puts "It's made with #{user.quiz_results[-1].print_ingredients}".center(61).cyan
       puts "\n"
       puts "Be sure to give it a taste!".center(61).light_blue
       puts "\n"
@@ -135,7 +135,7 @@ class LiquerY::CLI
       puts "but we're still decently confident that you'd enjoy #{user.quiz_results[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"}".center(64).light_blue
       puts "\n"
       puts "#{user.quiz_results[-1].strDrink}!".center(64).cyan
-      puts "It's made with #{user.quiz_results[-1].print_ingredients}".center(59).cyan
+      puts "It's made with #{user.quiz_results[-1].print_ingredients}".center(64).cyan
       puts "\n"
       puts "Be sure to give it a taste!".center(64).light_blue
       puts "\n"
