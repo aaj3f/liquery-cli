@@ -35,7 +35,7 @@ class LiquerY::CLI
   def compile
     spinner = ::TTY::Spinner.new("                  [:spinner]".light_blue, format: :bouncing)
     spinner.auto_spin
-    Drink.new_from_hash#(DrinkAPI.new.make_hash)
+    Drink.new_from_hash(DrinkAPI.new.make_hash)
     spinner.stop('Done!'.cyan)
   end
 
@@ -127,27 +127,31 @@ class LiquerY::CLI
     puts "How would you like to begin your search?".cyan
     puts "\n\t[1.] ".cyan + "Search by variety of alcohol or ingredient".light_blue
     puts "\t[2.] ".cyan + "Search by name of drink".light_blue
-    puts "\t[3.] ".cyan + "Search by palate keywords".light_blue
-    print "\nYour selection: ".cyan
-    input = gets.chomp
-    case input
-    when "1"
-      self.menu_search_by_alcohol
-      self.main_menu
-    when "2"
-      self.menu_search_by_drink_name
-      self.main_menu
-    when "3"
-      self.menu_search_by_palate_keyword
-      self.main_menu
-    end
+    puts "\t[3.] ".cyan + "Search by palate keywords\n".light_blue
+    begin
+      print "Your selection: ".cyan
+      input = gets.chomp
+      case input
+      when "1"
+        self.menu_search_by_alcohol
+        self.main_menu
+      when "2"
+        self.menu_search_by_drink_name
+        self.main_menu
+      when "3"
+        self.menu_search_by_palate_keyword
+        self.main_menu
+      else
+        puts "Whoops, \'#{input}\' isn't an option!".light_blue
+      end
+    end until ["1", "2", "3"].include?(input)
   end
 
   def menu_search_by_alcohol
     print "\nType the alcohol or ingredient name here: ".light_blue
     name = gets.chomp
     drink_array = Drink.search_by_alcohol_name(name)
-    puts "Here are all the drinks we know with ".cyan + "#{name.upcase} ".light_blue + "in them:".cyan
+    puts "\nHere are all the drinks we know with ".cyan + "#{name.upcase} ".light_blue + "in them:".cyan
     a = drink_array.each.with_index(1) {|d, i| puts "\t#{i}. #{d.strDrink}".light_blue}
     puts "Which drink would you like to know more about?".cyan
     begin
@@ -178,6 +182,8 @@ class LiquerY::CLI
         puts "\nAwesome! We've added ".light_blue + drink.strDrink.upcase.cyan + " to your list of \'liked drinks\'.".light_blue
         puts "\nPress [Enter] to return to the main menu..."
         STDIN.getch
+      else
+        puts "Whoops, \'#{input}\' isn't an option!".light_blue
       end
     end until input == "recipe" || input == "ingredients" || input == "add"
   end
@@ -187,6 +193,7 @@ class LiquerY::CLI
     begin
       print "Your selection: ".cyan
       input = gets.chomp
+      puts "Whoops, \'#{input}\' isn't an option!".light_blue unless ["dry", "sweet", "creamy", "bright"].include?(input)
     end until ["dry", "sweet", "creamy", "bright"].include?(input)
     drink_array = Drink.search_by_palate(input)
     puts "Here are all the drinks we know with a ".cyan + "#{input.upcase} ".light_blue + "palate:".cyan
@@ -242,7 +249,7 @@ class LiquerY::CLI
   def offer_main_test
     puts "LiquerY Quiz:".light_blue
     puts "Listed below are some classic cocktails. Pick the one you enjoy the most!".cyan #1. list test cocktails
-    a = Drink.select_for_test.each.with_index(1) {|x, i| puts "\t#{i}. #{x.strDrink}"}
+    a = Drink.select_for_test.each.with_index(1) { |x, i| puts "#{i}. #{x.strDrink}".center(30)}
     begin
       print "Your favorite: ".cyan
       input = gets.chomp
@@ -261,7 +268,7 @@ class LiquerY::CLI
         array << drink if drink.all_ingredients.include?(ingredient)
       end
     end.uniq.reject{|d| d == User.current_user.recent_choice}
-    b.each.with_index(1) {|x, i| puts "\t#{i}. #{x.strDrink}"}
+    b.each.with_index(1) { |x, i| puts "#{i}. #{x.strDrink}".center(30)}
     begin
       print "Your choice: ".light_blue
       input = gets.chomp
@@ -282,7 +289,7 @@ class LiquerY::CLI
       puts "LiquerY Quiz:".light_blue
       puts "Given the cocktails you've identified so far, we're noticing".cyan #3. test for dislikes
       puts "that you might not enjoy the palates of some of these drinks:".cyan
-      bad_drinks.each.with_index(1) {|x, i| puts "\t#{i}. #{x.strDrink}"}
+      bad_drinks.each.with_index(1) { |x, i| puts "#{i}. #{x.strDrink}".center(30)}
       puts "Is there one drink on this list that you absolutely cannot stand?".cyan
       begin
         print "If so, type that drink's number, otherwise type [none]: ".light_blue
