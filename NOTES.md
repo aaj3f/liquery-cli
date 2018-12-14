@@ -1,5 +1,8 @@
-TODO:
-build out main menu
+palate keywords
+  if drink.all_ingredients include lime juice + simple syrup or lemon juice + simple syrup, @palate=(bright)
+  elsif drink.all_ingredients include milk or cream or kahlua or bailey\'s, @palate=(creamy)
+  elsif drink.all_ingredients include simple syrup, @palate=(sweet)
+  else @palate=(dry)
 
 
 

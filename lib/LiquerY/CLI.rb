@@ -46,44 +46,166 @@ class LiquerY::CLI
       puts "so that we can get a sense for your likes & dislikes!".light_blue
       self.drink_quiz
     else
-      puts "\nNow that you've completed our quiz, we have a few".cyan
+      system "clear"
+      puts "Main Menu:".light_blue
+      puts "Now that you've completed our quiz, we have a few".cyan
       puts "other services that may be helpful to you!".cyan
       self.list_menu_options
     end
   end
 
+
+
+  ## ------------ ##
+  ## MENU METHODS ##
+  ## ------------ ##
+
   def list_menu_options
-    puts "\n\t1. See a list of your liked & recommended drinks".light_blue
-    puts "\t2. Search our entire repertoire of cocktails".light_blue
-    puts "\t3. Take our quiz again to update your preferences".light_blue
-    print "\t[Or enter 'exit' to leave the app...]".light_blue
-    input = gets.chomp
-    case input
-    when "1"
-      User.current_user.list_liked_drinks
-      puts "\nWould you like to see the #{"[1.]".light_blue} the ingredients for one of".cyan
-      puts "these drinks or #{"[2.]".light_blue} learn how to mix one of them?".cyan
-      print "Enter #{"\"1\"".light_blue}, #{"\"2\"".light_blue}, or #{"\"menu\"".light_blue} to return to menu... ".cyan
+    puts "\n\t[1.] ".cyan + "See a list of your liked & recommended drinks".light_blue
+    puts "\t[2.] ".cyan + "Search our entire repertoire of cocktails".light_blue
+    puts "\t[3.] ".cyan + "Take our quiz again to update your preferences".light_blue
+    puts "\t...or type ".light_blue + "\'exit\'".cyan + " to leave the app.".light_blue
+    begin
+      print "\nYour selection: ".cyan
+      input = gets.chomp
+      case input
+      when "1"
+        system "clear"
+        self.list_liked_and_recommended
+      when "2"
+        self.list_search_options #need to build and build associated Drink class methods
+      when "3"
+        self.drink_quiz
+      when "exit"
+        self.exit
+      else
+        puts "Whoops, \'#{input}\' isn't an option!".light_blue
+      end
+    end until ["1", "2", "3", "exit"].include?(input)
+  end
+
+  def list_liked_and_recommended
+    puts "Liked & Recommended Drinks:".light_blue
+    User.current_user.list_liked_drinks
+    puts "\nWould you like to see ".cyan + "[1.]".light_blue + " the ingredients for one of".cyan
+    puts "these drinks or ".cyan + "[2.]".light_blue + " learn how to mix one of them?".cyan
+    begin
+      print "Enter ".cyan + "\"1\"".light_blue + ", ".cyan + "\"2\"".light_blue + ", or ".cyan + "\"menu\"".light_blue + " to return to menu... ".cyan
       input = gets.chomp
       case input
       when "1"
         self.user_local_ingredient_search
         self.main_menu
       when "2"
+        self.user_local_recipe_search
+        self.main_menu
       when "menu"
         self.main_menu
+      else
+        puts "Whoops, \'#{input}\' isn't an option!".light_blue
       end
+    end until ["1", "2", "menu"].include?(input)
+  end
+
+  def user_local_ingredient_search
+    puts "\nWhich drink would you like to see the ingredients for?".light_blue
+    print "Type the drink name here: ".light_blue
+    input = gets.chomp.capitalize
+    Drink.find_ingredients_by_drink_name(input)
+  end
+
+  def user_local_recipe_search
+    puts "\nWhich drink would you like to see mixing instructions for?".light_blue
+    print "Type the drink name here: ".light_blue
+    input = gets.chomp.capitalize
+    Drink.find_recipe_by_drink_name(input)
+  end
+
+  def list_search_options
+    system "clear"
+    puts "Search Cocktails:".light_blue
+    puts "How would you like to begin your search?".cyan
+    puts "\n\t[1.] ".cyan + "Search by variety of alcohol or ingredient".light_blue
+    puts "\t[2.] ".cyan + "Search by name of drink".light_blue
+    puts "\t[3.] ".cyan + "Search by palate keywords".light_blue
+    print "\nYour selection: ".cyan
+    input = gets.chomp
+    case input
+    when "1"
+      self.menu_search_by_alcohol
+      self.main_menu
     when "2"
-      self.list_search_options #need to build and build associated Drink class methods
+      self.menu_search_by_drink_name
+      self.main_menu
     when "3"
-      self.drink_quiz
-    when "exit"
-      self.exit
-    else
-      puts "Whoops, we don't recognize that option..."
+      self.menu_search_by_palate_keyword
       self.main_menu
     end
   end
+
+  def menu_search_by_alcohol
+    print "\nType the alcohol or ingredient name here: ".light_blue
+    name = gets.chomp
+    drink_array = Drink.search_by_alcohol_name(name)
+    puts "Here are all the drinks we know with ".cyan + "#{name.upcase} ".light_blue + "in them:".cyan
+    a = drink_array.each.with_index(1) {|d, i| puts "\t#{i}. #{d.strDrink}".light_blue}
+    puts "Which drink would you like to know more about?".cyan
+    begin
+      print "Type the number of the drink here: ".cyan
+      input = gets.chomp
+    end until self.safe_input?(input, a) == true
+    self.menu_search_by_drink_name(a[input.to_i - 1].strDrink)
+  end
+
+  def menu_search_by_drink_name(name = nil)
+    if !(name)
+      print "\nType the drink name here: ".light_blue
+      name = gets.chomp
+    end
+    drink = Drink.search_by_drink_name(name)
+    puts "\nWould you like to see the ".cyan + "[recipe]".light_blue + " or ".cyan + "[ingredients]".light_blue + " of #{drink.strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{drink.strDrink.upcase}?".cyan
+    puts "...or would you like to ".cyan + "[add]".light_blue + " it to your list of \'liked drinks\'?".cyan
+    begin
+      print "Your selection: ".cyan
+      input = gets.chomp
+      case input
+      when "recipe"
+        Drink.find_recipe_by_drink_name(drink.strDrink)
+      when "ingredients"
+        Drink.find_ingredients_by_drink_name(drink.strDrink)
+      when "add"
+        User.current_user.liked_drinks << drink
+        puts "\nAwesome! We've added ".light_blue + drink.strDrink.upcase.cyan + " to your list of \'liked drinks\'.".light_blue
+        puts "\nPress [Enter] to return to the main menu..."
+        STDIN.getch
+      end
+    end until input == "recipe" || input == "ingredients" || input == "add"
+  end
+
+  def menu_search_by_palate_keyword
+    puts "\nWould you like to search for a ".light_blue + "dry".cyan + ", ".light_blue + "sweet".cyan + ", ".light_blue + "creamy".cyan + ", or ".light_blue + "bright ".cyan + "drink?".light_blue
+    begin
+      print "Your selection: ".cyan
+      input = gets.chomp
+    end until ["dry", "sweet", "creamy", "bright"].include?(input)
+    drink_array = Drink.search_by_palate(input)
+    puts "Here are all the drinks we know with a ".cyan + "#{input.upcase} ".light_blue + "palate:".cyan
+    a = drink_array.each.with_index(1) {|d, i| puts "\t#{i}. #{d.strDrink}".light_blue}
+    puts "Which drink would you like to know more about?".cyan
+    begin
+      print "Type the number of the drink here: ".cyan
+      input = gets.chomp
+    end until self.safe_input?(input, a) == true
+    self.menu_search_by_drink_name(a[input.to_i - 1].strDrink)
+  end
+
+  def exit
+    puts "\nThanks for stopping by! Have a great day!".cyan
+  end
+
+  ## ------------ ##
+  ## QUIZ METHODS ##
+  ## ------------ ##
 
   def drink_quiz
     puts "\nAre you ready to take our quiz? [Press Enter to begin]..."
@@ -117,20 +239,9 @@ class LiquerY::CLI
     self.main_menu
   end
 
-  def user_local_ingredient_search
-    puts "\nWhich drink would you like to see the ingredients for?".light_blue
-    print "Type the drink name here: ".light_blue
-    input = gets.chomp
-    if Drink.all.map {|d| d.strDrink}.include?(input)
-      Drink.find_ingredients_by_drink_name(input)
-    else
-      puts "Whoops, can you try typing that again?"
-      self.user_local_ingredient_search
-    end
-  end
-
   def offer_main_test
-    puts "\nListed below are some classic cocktails. Pick the one you enjoy the most!".cyan #1. list test cocktails
+    puts "LiquerY Quiz:".light_blue
+    puts "Listed below are some classic cocktails. Pick the one you enjoy the most!".cyan #1. list test cocktails
     a = Drink.select_for_test.each.with_index(1) {|x, i| puts "\t#{i}. #{x.strDrink}"}
     begin
       print "Your favorite: ".cyan
@@ -138,12 +249,13 @@ class LiquerY::CLI
     end until self.safe_input?(input, a) == true
     User.current_user.liked_drinks << a[input.to_i - 1]
     system "clear"
-    puts "\nGotcha! So of those drinks, your favorite is #{User.current_user.recent_choice.strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.recent_choice.strDrink}?".light_blue
+    puts "LiquerY Quiz:".light_blue
+    puts "Gotcha! So of those drinks, your favorite is #{User.current_user.recent_choice.strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.recent_choice.strDrink}?".cyan
   end
 
   def offer_sub_test
-    puts "\nIf you had to pick one other drink from this smaller list,".cyan#2. list subtest cocktails
-    puts "what would it be?".cyan
+    puts "\nIf you had to pick one other drink from this smaller list,".light_blue#2. list subtest cocktails
+    puts "what would it be?".light_blue
     b = Drink.select_for_test.each.with_object([]) do |drink, array|
       User.current_user.recent_choice.all_ingredients.each do |ingredient|
         array << drink if drink.all_ingredients.include?(ingredient)
@@ -151,14 +263,15 @@ class LiquerY::CLI
     end.uniq.reject{|d| d == User.current_user.recent_choice}
     b.each.with_index(1) {|x, i| puts "\t#{i}. #{x.strDrink}"}
     begin
-      print "Your choice: ".cyan
+      print "Your choice: ".light_blue
       input = gets.chomp
     end until self.safe_input?(input, b) == true
     User.current_user.liked_drinks << b[input.to_i - 1]
     User.current_user.add_to_liked_ingredients
     system "clear"
-    puts "\nSuper! So although your 1st choice was #{User.current_user.liked_drinks[-2].strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.liked_drinks[-2].strDrink},".light_blue
-    puts "you also could find yourself enjoying #{User.current_user.recent_choice.strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.recent_choice.strDrink}.".light_blue
+    puts "LiquerY Quiz:".light_blue
+    puts "Super! So although your 1st choice was #{User.current_user.liked_drinks[-2].strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.liked_drinks[-2].strDrink},".cyan
+    puts "you also could find yourself enjoying #{User.current_user.recent_choice.strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.recent_choice.strDrink}.".cyan
   end
 
   def test_dislikes
@@ -166,18 +279,30 @@ class LiquerY::CLI
       (drink.all_ingredients & User.current_user.liked_ingrdients).empty?
     end
     unless bad_drinks.empty?
-      puts "\nGiven the cocktails you've identified so far, we're noticing".cyan #3. test for dislikes
+      puts "LiquerY Quiz:".light_blue
+      puts "Given the cocktails you've identified so far, we're noticing".cyan #3. test for dislikes
       puts "that you might not enjoy the palates of some of these drinks:".cyan
       bad_drinks.each.with_index(1) {|x, i| puts "\t#{i}. #{x.strDrink}"}
       puts "Is there one drink on this list that you absolutely cannot stand?".cyan
       begin
-        print "Your choice: ".cyan
+        print "If so, type that drink's number, otherwise type [none]: ".light_blue
         input = gets.chomp
-      end until self.safe_input?(input, bad_drinks) == true
-      User.current_user.disliked_drinks << bad_drinks[input.to_i - 1]
-      system "clear"
-      puts "\nBlech! You just do not enjoy #{User.current_user.disliked_drinks[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.disliked_drinks[-1].strDrink}.".light_blue
-      puts "We hear you! And that's great to know!".light_blue
+      end until (self.safe_input?(input, bad_drinks) == true) || (input == "none")
+      if input == "none"
+        User.current_user.disliked_drinks << Drink::DUMMY_DRINK
+        system "clear"
+        puts "LiquerY Quiz:".light_blue
+        puts "Perfect! It's easier for us to recommend a drink if there aren't many drinks you detest!".cyan
+      else
+        User.current_user.disliked_drinks << bad_drinks[input.to_i - 1]
+        system "clear"
+        puts "LiquerY Quiz:".light_blue
+        puts "Blech! You just do not enjoy #{User.current_user.disliked_drinks[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.disliked_drinks[-1].strDrink}.".cyan
+        puts "We hear you! And that's great to know!".cyan
+      end
+    else
+      puts "LiquerY Quiz:".light_blue
+      puts "Actually, we don't think we have any further questions for you!".cyan
     end
   end
 
@@ -206,10 +331,9 @@ class LiquerY::CLI
   end
 
   def return_quiz_results
-    User.current_user.quiz_results = [] # 6. return User.current_user.s quiz results
+    User.current_user.quiz_results ||= [] # 6. return User.current_user.s quiz results
     if (User.current_user.great_drinks & Drink.select_for_test).size > 0
       User.current_user.quiz_results << (User.current_user.great_drinks & Drink.select_for_test).sample
-      puts "\n"
       puts "The answer was under our noses the entire time!".center(59).light_blue
       puts "We know we've asked you about this drink in the list above,".light_blue
       puts "but we're totally positive that you would love #{User.current_user.quiz_results[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"}".center(59).light_blue
@@ -221,7 +345,6 @@ class LiquerY::CLI
       puts "\n"
     elsif User.current_user.great_drinks.size > 0
       User.current_user.quiz_results << User.current_user.great_drinks.sample
-      puts "\n"
       puts "So, we had to look into some of our more obsucre".center(61).light_blue
       puts "cocktail recipes to find something just perfect for you".center(61).light_blue
       puts "but we're still totally certain that you're going to love it!".light_blue
@@ -233,7 +356,6 @@ class LiquerY::CLI
       puts "\n"
     else
       User.current_user.quiz_results << User.current_user.okay_drinks.sample
-      puts "\n"
       puts "We have to admit it... you've stumped us a little bit!".center(64).light_blue
       puts "Maybe all drink palates can't be boiled down to some algorithms,".light_blue
       puts "but we're still decently confident that you'd enjoy #{User.current_user.quiz_results[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"}".center(64).light_blue
@@ -256,9 +378,7 @@ class LiquerY::CLI
     end
   end
 
-  def exit
-    "\nThanks for stopping by! Have a great day!"
-  end
+
 
 
 end

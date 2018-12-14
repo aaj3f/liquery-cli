@@ -6,5 +6,6 @@ require "open-uri"
 require "pry"
 require "colorize"
 require "colorized_string"
+require "fuzzy_match"
 
 LiquerY::CLI.new.call

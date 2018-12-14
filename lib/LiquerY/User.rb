@@ -19,7 +19,7 @@ class User
   end
 
   def list_liked_drinks
-    puts "\nDrinks you like:".cyan
+    puts "Drinks you like:".cyan
     puts "\n\t#{self.print_list(self.liked_drinks)}".light_blue
     puts "\nDrinks we've recommended:".cyan
     puts "\n\t#{self.print_list(self.quiz_results)}".light_blue
