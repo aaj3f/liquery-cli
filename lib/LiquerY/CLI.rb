@@ -56,26 +56,39 @@ class LiquerY::CLI
     puts "\n\t1. See a list of your liked & recommended drinks".light_blue
     puts "\t2. Search our entire repertoire of cocktails".light_blue
     puts "\t3. Take our quiz again to update your preferences".light_blue
-    puts "[Or enter 'exit' to leave the app...]"
+    print "\t[Or enter 'exit' to leave the app...]".light_blue
     input = gets.chomp
     case input
     when "1"
-      self.list_liked_drinks #need to migrate from User
+      User.current_user.list_liked_drinks
+      puts "\nWould you like to see the #{"[1.]".light_blue} the ingredients for one of".cyan
+      puts "these drinks or #{"[2.]".light_blue} learn how to mix one of them?".cyan
+      print "Enter #{"\"1\"".light_blue}, #{"\"2\"".light_blue}, or #{"\"menu\"".light_blue} to return to menu... ".cyan
+      input = gets.chomp
+      case input
+      when "1"
+        self.user_local_ingredient_search
+        self.main_menu
+      when "2"
+      when "menu"
+        self.main_menu
+      end
     when "2"
       self.list_search_options #need to build and build associated Drink class methods
     when "3"
       self.drink_quiz
     when "exit"
-      self.exit #need to build
+      self.exit
     else
       puts "Whoops, we don't recognize that option..."
-      self.list_menu_options
+      self.main_menu
     end
   end
 
   def drink_quiz
     puts "\nAre you ready to take our quiz? [Press Enter to begin]..."
     STDIN.getch
+    system "clear"
 
     User.current_user || User.new
     self.offer_main_test
@@ -84,6 +97,7 @@ class LiquerY::CLI
     puts "\nDepending on your answers, we may have a few"
     puts "more questions for you... [Press Enter to continue]"
     STDIN.getch
+    system "clear"
 
     self.test_dislikes
 
@@ -93,12 +107,26 @@ class LiquerY::CLI
     puts "\nThanks for completing our quiz!! Now give us just one second as"
     puts "we find a drink you're sure to enjoy! [Press Enter to Continue...]"
     STDIN.getch
+    system "clear"
 
     self.return_quiz_results
 
     puts "\nWe're ready to return to the main menu! [Press Enter to continue]..."
     STDIN.getch
+    system "clear"
     self.main_menu
+  end
+
+  def user_local_ingredient_search
+    puts "\nWhich drink would you like to see the ingredients for?".light_blue
+    print "Type the drink name here: ".light_blue
+    input = gets.chomp
+    if Drink.all.map {|d| d.strDrink}.include?(input)
+      Drink.find_ingredients_by_drink_name(input)
+    else
+      puts "Whoops, can you try typing that again?"
+      self.user_local_ingredient_search
+    end
   end
 
   def offer_main_test
@@ -109,7 +137,8 @@ class LiquerY::CLI
       input = gets.chomp
     end until self.safe_input?(input, a) == true
     User.current_user.liked_drinks << a[input.to_i - 1]
-    puts "\nGotcha! So of the drinks above, your favorite is #{User.current_user.recent_choice.strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.recent_choice.strDrink}?".light_blue
+    system "clear"
+    puts "\nGotcha! So of those drinks, your favorite is #{User.current_user.recent_choice.strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.recent_choice.strDrink}?".light_blue
   end
 
   def offer_sub_test
@@ -127,6 +156,7 @@ class LiquerY::CLI
     end until self.safe_input?(input, b) == true
     User.current_user.liked_drinks << b[input.to_i - 1]
     User.current_user.add_to_liked_ingredients
+    system "clear"
     puts "\nSuper! So although your 1st choice was #{User.current_user.liked_drinks[-2].strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.liked_drinks[-2].strDrink},".light_blue
     puts "you also could find yourself enjoying #{User.current_user.recent_choice.strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.recent_choice.strDrink}.".light_blue
   end
@@ -145,6 +175,7 @@ class LiquerY::CLI
         input = gets.chomp
       end until self.safe_input?(input, bad_drinks) == true
       User.current_user.disliked_drinks << bad_drinks[input.to_i - 1]
+      system "clear"
       puts "\nBlech! You just do not enjoy #{User.current_user.disliked_drinks[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.disliked_drinks[-1].strDrink}.".light_blue
       puts "We hear you! And that's great to know!".light_blue
     end
@@ -223,6 +254,10 @@ class LiquerY::CLI
       puts "Sorry, that selection is invalid. Mind trying again?".light_blue
       false
     end
+  end
+
+  def exit
+    "\nThanks for stopping by! Have a great day!"
   end
 
 

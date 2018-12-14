@@ -1,8 +1,10 @@
+TODO:
+build out main menu
 
 
 
 Need to make:
-  
+
   Flavor Profile class:
     that can:
       instantiate individual flavor profiles

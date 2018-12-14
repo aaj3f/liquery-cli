@@ -19,15 +19,32 @@ class User
   end
 
   def list_liked_drinks
-    "Drinks you like: #{self.names(liked_drinks)}#{"& Drinks we've recommended: #{self.names(quiz_results)}" if self.quiz_results}."
+    puts "\nDrinks you like:".cyan
+    puts "\n\t#{self.print_list(self.liked_drinks)}".light_blue
+    puts "\nDrinks we've recommended:".cyan
+    puts "\n\t#{self.print_list(self.quiz_results)}".light_blue
   end
 
   def list_disliked_drinks
     "Drinks you dislike: #{self.names(disliked_drinks)}."
   end
 
+  def print_list(array)
+    array.each.with_object("") do |drink, string|
+      if array.size == 1
+        string << drink.strDrink
+      elsif array.size == 2 && drink == array[0]
+        string << "#{drink.strDrink} "
+      elsif drink == array[-1]
+        string << "and #{drink.strDrink}"
+      else
+        string << "#{drink.strDrink}, "
+      end
+    end
+  end
+
   def names(drink_array)
-    self.send("#{drink_array}").map {|drink| drink.strDrink}
+    drink_array.map {|drink| drink.strDrink}
   end
 
   def recent_choice

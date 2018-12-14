@@ -61,5 +61,12 @@ class Drink
     end
   end
 
+  def self.find_ingredients_by_drink_name(name)
+    drink = Drink.all.find {|d| d.strDrink == name}
+    puts "\n#{drink.strDrink} --".cyan
+    puts "#{drink.print_ingredients}".cyan
+    puts "\n--------------------------------------".light_blue
+  end
+
 
 end
