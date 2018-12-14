@@ -1,4 +1,5 @@
-
+TODO:
+Refactor the CLI, it's horrendous
 
 
 Need to make:
