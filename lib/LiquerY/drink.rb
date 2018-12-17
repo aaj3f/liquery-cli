@@ -10,11 +10,11 @@ class Drink
     @@all
   end
 
-  def self.new_from_hash(hash)
-    hash.each do |id, drink_array|
+  def self.new_from_hash#(hash)
+    DRINK_HASH.each do |id, drink_array|
       drink = self.new
       drink.all_ingredients = []
-      drink_array.each do |method, arg| ###REMOVE THIS ZERO WHEN YOU PULL FROM API!!!
+      drink_array[0].each do |method, arg| ###REMOVE THIS ZERO WHEN YOU PULL FROM API!!!
         if !(["strDrink", "strInstructions"].include?(method))
           if drink.respond_to?("#{method}") && arg.is_a?(String) && arg.include?("Absolut")
             drink.send("#{method}=", "Vodka") #Had to hardcode this in
@@ -48,7 +48,7 @@ class Drink
       else
         drink.palate = "dry"
       end
-      @@all << drink
+      @@all << drink unless drink.idDrink == "14133" #To filter out "Cosmopolitan Martini, which for some reason is included in the database twice under different spellings."
     end
   end
 

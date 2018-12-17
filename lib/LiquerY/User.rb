@@ -1,11 +1,11 @@
 class User
-  attr_accessor :liked_drinks, :liked_ingrdients, :disliked_drinks, :quiz_results, :okay_drinks, :great_drinks
+  attr_accessor :liked_drinks, :liked_ingredients, :disliked_drinks, :quiz_results, :okay_drinks, :great_drinks
 
   @@all = []
 
   def initialize
     self.liked_drinks = []
-    self.liked_ingrdients = []
+    self.liked_ingredients = []
     self.disliked_drinks = []
     @@all << self
   end
@@ -52,7 +52,7 @@ class User
   end
 
   def add_to_liked_ingredients
-    @liked_ingrdients.concat((self.liked_drinks.map {|d| d.all_ingredients}).flatten.uniq)
+    @liked_ingredients.concat((self.liked_drinks.map {|d| d.all_ingredients}).flatten.uniq)
   end
 
 end

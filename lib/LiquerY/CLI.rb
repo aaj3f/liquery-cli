@@ -35,7 +35,7 @@ class LiquerY::CLI
   def compile
     spinner = ::TTY::Spinner.new("                  [:spinner]".light_blue, format: :bouncing)
     spinner.auto_spin
-    Drink.new_from_hash(DrinkAPI.new.make_hash)
+    Drink.new_from_hash#(DrinkAPI.new.make_hash)
     spinner.stop('Done!'.cyan)
   end
 
@@ -230,8 +230,9 @@ class LiquerY::CLI
 
     self.test_dislikes
 
-    User.current_user.okay_drinks = self.calculate_okay_drinks
-    User.current_user.great_drinks = self.calculate_great_drinks
+    User.current_user.quiz_results ||= []
+    User.current_user.okay_drinks = (self.calculate_okay_drinks || [])
+    User.current_user.great_drinks = (self.calculate_great_drinks || [])
 
     puts "\nThanks for completing our quiz!! Now give us just one second as"
     puts "we find a drink you're sure to enjoy! [Press Enter to Continue...]"
@@ -254,7 +255,7 @@ class LiquerY::CLI
       print "Your favorite: ".cyan
       input = gets.chomp
     end until self.safe_input?(input, a) == true
-    User.current_user.liked_drinks << a[input.to_i - 1]
+    User.current_user.liked_drinks << a[input.to_i - 1] unless User.current_user.liked_drinks.include?(a[input.to_i - 1])
     system "clear"
     puts "LiquerY Quiz:".light_blue
     puts "Gotcha! So of those drinks, your favorite is #{User.current_user.recent_choice.strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.recent_choice.strDrink}?".cyan
@@ -273,7 +274,7 @@ class LiquerY::CLI
       print "Your choice: ".light_blue
       input = gets.chomp
     end until self.safe_input?(input, b) == true
-    User.current_user.liked_drinks << b[input.to_i - 1]
+    User.current_user.liked_drinks << b[input.to_i - 1] unless User.current_user.liked_drinks.include?(b[input.to_i - 1])
     User.current_user.add_to_liked_ingredients
     system "clear"
     puts "LiquerY Quiz:".light_blue
@@ -283,8 +284,9 @@ class LiquerY::CLI
 
   def test_dislikes
     bad_drinks = Drink.select_for_test.select do |drink|
-      (drink.all_ingredients & User.current_user.liked_ingrdients).empty?
+      User.current_user.liked_ingredients.size >= 10 ? (drink.all_ingredients & User.current_user.liked_ingredients).size < 2 : (drink.all_ingredients & User.current_user.liked_ingredients).empty?
     end
+    bad_drinks -= User.current_user.disliked_drinks
     unless bad_drinks.empty?
       puts "LiquerY Quiz:".light_blue
       puts "Given the cocktails you've identified so far, we're noticing".cyan #3. test for dislikes
@@ -296,18 +298,19 @@ class LiquerY::CLI
         input = gets.chomp
       end until (self.safe_input?(input, bad_drinks) == true) || (input == "none")
       if input == "none"
-        User.current_user.disliked_drinks << Drink::DUMMY_DRINK
+        User.current_user.disliked_drinks << Drink::DUMMY_DRINK if User.current_user.disliked_drinks.empty?
         system "clear"
         puts "LiquerY Quiz:".light_blue
         puts "Perfect! It's easier for us to recommend a drink if there aren't many drinks you detest!".cyan
       else
         User.current_user.disliked_drinks << bad_drinks[input.to_i - 1]
+        User.current_user.liked_drinks -= (User.current_user.liked_drinks & User.current_user.disliked_drinks)
         system "clear"
         puts "LiquerY Quiz:".light_blue
         puts "Blech! You just do not enjoy #{User.current_user.disliked_drinks[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.disliked_drinks[-1].strDrink}.".cyan
         puts "We hear you! And that's great to know!".cyan
       end
-    else
+    else # i.e. if bad_drinks.empty?
       puts "LiquerY Quiz:".light_blue
       puts "Actually, we don't think we have any further questions for you!".cyan
     end
@@ -315,60 +318,58 @@ class LiquerY::CLI
 
   def calculate_okay_drinks
     Drink.all.select do |drink| #4. calculate User.current_user.s "okay_drinks" array
-      if (User.current_user.liked_drinks + User.current_user.disliked_drinks).include?(drink)
+      if (User.current_user.liked_drinks + User.current_user.disliked_drinks + User.current_user.quiz_results).include?(drink)
         false
       elsif drink.all_ingredients.size < 4
-        (drink.all_ingredients & User.current_user.liked_ingrdients).size > 0 && (drink.all_ingredients & User.current_user.disliked_drinks[-1].all_ingredients).size <= 1
+        (drink.all_ingredients & User.current_user.liked_ingredients).size > 0 && (drink.all_ingredients & User.current_user.disliked_drinks[-1].all_ingredients).size <= 1
       else
-        (drink.all_ingredients & User.current_user.liked_ingrdients).size > 1 && (drink.all_ingredients & User.current_user.disliked_drinks[-1].all_ingredients).size <= 1
+        (drink.all_ingredients & User.current_user.liked_ingredients).size > 1 && (drink.all_ingredients & User.current_user.disliked_drinks[-1].all_ingredients).size <= 1
       end
     end
   end
 
   def calculate_great_drinks
-    Drink.all.select do |drink| # 5. calculate User.current_user.s "great_drinks array"
-      if (User.current_user.liked_drinks + User.current_user.disliked_drinks).include?(drink)
+    array = Drink.all.select do |drink| # 5. calculate User.current_user.s "great_drinks array"
+      if (User.current_user.liked_drinks + User.current_user.disliked_drinks + User.current_user.quiz_results).include?(drink)
         false
       elsif drink.all_ingredients.size < 4
-        (drink.all_ingredients & User.current_user.liked_ingrdients).size > 1 && (drink.all_ingredients & User.current_user.disliked_drinks[-1].all_ingredients).size <= 1
+        (drink.all_ingredients & User.current_user.liked_ingredients).size > 1 && (drink.all_ingredients & User.current_user.disliked_drinks[-1].all_ingredients).size <= 1
       else
-        (drink.all_ingredients & User.current_user.liked_ingrdients).size > 2 && (drink.all_ingredients & User.current_user.disliked_drinks[-1].all_ingredients).size <= 1
+        (drink.all_ingredients & User.current_user.liked_ingredients).size > 2 && (drink.all_ingredients & User.current_user.disliked_drinks[-1].all_ingredients).size <= 1
       end
     end
   end
 
   def return_quiz_results
-    User.current_user.quiz_results ||= [] # 6. return User.current_user.s quiz results
-    if (User.current_user.great_drinks & Drink.select_for_test).size > 0
-      User.current_user.quiz_results << (User.current_user.great_drinks & Drink.select_for_test).sample
+    User.current_user.great_drinks.size > 1 ? drink = User.current_user.great_drinks.sample : drink = User.current_user.okay_drinks.sample
+    User.current_user.quiz_results << drink
+    if Drink.select_for_test.include?(drink)
       puts "The answer was under our noses the entire time!".center(59).light_blue
       puts "We know we've asked you about this drink in the list above,".light_blue
       puts "but we're totally positive that you would love #{User.current_user.quiz_results[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"}".center(59).light_blue
       puts "\n"
-      puts "#{User.current_user.quiz_results[-1].strDrink}!".center(59).cyan
-      puts "It's made with #{User.current_user.quiz_results[-1].print_ingredients}".center(59).cyan
+      puts "#{drink.strDrink}!".center(59).cyan
+      puts "It's made with #{drink.print_ingredients}".center(59).cyan
       puts "\n"
       puts "Give it a whirl, if you haven't tried one before!".center(59).light_blue
       puts "\n"
-    elsif User.current_user.great_drinks.size > 0
-      User.current_user.quiz_results << User.current_user.great_drinks.sample
-      puts "So, we had to look into some of our more obsucre".center(61).light_blue
+    elsif User.current_user.great_drinks.include?(drink)
+      puts "So, we had to look into some of our more obscure".center(61).light_blue
       puts "cocktail recipes to find something just perfect for you".center(61).light_blue
       puts "but we're still totally certain that you're going to love it!".light_blue
       puts "\n"
-      puts "The #{User.current_user.quiz_results[-1].strDrink}!".center(61).cyan
-      puts "It's made with #{User.current_user.quiz_results[-1].print_ingredients}".center(61).cyan
+      puts "The #{drink.strDrink}!".center(61).cyan
+      puts "It's made with #{drink.print_ingredients}".center(61).cyan
       puts "\n"
       puts "Be sure to give it a taste!".center(61).light_blue
       puts "\n"
     else
-      User.current_user.quiz_results << User.current_user.okay_drinks.sample
-      puts "We have to admit it... you've stumped us a little bit!".center(64).light_blue
+      puts "We have to admit it... you nearly stumped us there!".center(64).light_blue
       puts "Maybe all drink palates can't be boiled down to some algorithms,".light_blue
-      puts "but we're still decently confident that you'd enjoy #{User.current_user.quiz_results[-1].strDrink.match(/^[aeiou]/i) ? "an" : "a"}".center(64).light_blue
+      puts "but we're still decently confident that you'd enjoy #{drink.strDrink.match(/^[aeiou]/i) ? "an" : "a"}".center(64).light_blue
       puts "\n"
-      puts "#{User.current_user.quiz_results[-1].strDrink}!".center(64).cyan
-      puts "It's made with #{User.current_user.quiz_results[-1].print_ingredients}".center(64).cyan
+      puts "#{drink.strDrink}!".center(64).cyan
+      puts "It's made with #{drink.print_ingredients}".center(64).cyan
       puts "\n"
       puts "Be sure to give it a taste!".center(64).light_blue
       puts "\n"
