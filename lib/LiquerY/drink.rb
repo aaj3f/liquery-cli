@@ -14,40 +14,13 @@ class Drink
     DRINK_HASH.each do |id, drink_array|
       drink = self.new
       drink.all_ingredients = []
-      drink_array[0].each do |method, arg| ###REMOVE THIS ZERO WHEN YOU PULL FROM API!!!
-        if !(["strDrink", "strInstructions"].include?(method))
-          if drink.respond_to?("#{method}") && arg.is_a?(String) && arg.include?("Absolut")
-            drink.send("#{method}=", "Vodka") #Had to hardcode this in
-            #because for almost every drink they list a generic liquor
-            #as an ingredient, except for, frustratingly, certain vodka
-            #drinks, for which they give a brand name Absolut variety
-            #that messes up my algorithm
-          elsif drink.respond_to?("#{method}") && arg.is_a?(String) && (arg.include?("lemon") || arg.include?("Lemon"))
-            drink.send("#{method}=", "Lemon Juice")
-            drink.send("strIngredient9=", "Simple Syrup")
-          elsif drink.respond_to?("#{method}") && arg.is_a?(String) && (arg.include?("Sugar") || arg.include?("Simple"))
-            drink.send("#{method}=", "Simple Syrup")
-          elsif drink.respond_to?("#{method}") && arg.is_a?(String) && arg.include?("Lime")
-            drink.send("#{method}=", "Lime Juice")
-          elsif drink.respond_to?("#{method}") && arg != " " && arg != ""
-            drink.send("#{method}=", arg)
-          end
-        elsif drink.respond_to?("#{method}") && arg != " " && arg != ""
-          drink.send("#{method}=", arg)
-        end
-      end
-      drink.instance_variables.map{|v|v.to_s.tr('@', '')}.select{|v| v.match(/^strIng/)}.each do |v|
-        drink.all_ingredients << drink.send("#{v}") unless (drink.send("#{v}") == nil || drink.all_ingredients.include?(drink.send("#{v}")))
-      end
-      if (drink.all_ingredients.map {|d|d.downcase} & ["cream", "milk", "kahlua", "bailey", "bailey\'s irish cream", "creme de cacao", "white creme de menthe", "hot chocolate", "coffee liqueur", "chocolate liqueur", "pina colada mix"]).any?
-        drink.palate = "creamy"
-      elsif (drink.all_ingredients.map {|d|d.downcase} & ["lime juice", "lemon juice"]).any? && !(drink.all_ingredients.map {|d|d.downcase}.include?("simple syrup")) || (drink.all_ingredients.map {|d|d.downcase} & ["sour mix", "sweet and sour", "pisco"]).any?
-          drink.palate = "bright"
-      elsif (drink.all_ingredients.map {|d|d.downcase} & ["simple syrup", "grenadine", "creme de cassis", "apple juice", "cranberry juice", "pineapple juice", "maraschino cherry", "maraschino liqueur", "grape soda", "kool-aid"]).any?
-        drink.palate = "sweet"
-      else
-        drink.palate = "dry"
-      end
+
+      correct_and_set_data(drink, drink_array)
+
+      concat_ingredients(drink)
+
+      filter_and_set_by_palate(drink)
+
       @@all << drink unless drink.idDrink == "14133" #To filter out "Cosmopolitan Martini, which for some reason is included in the database twice under different spellings."
     end
   end
@@ -111,5 +84,49 @@ class Drink
     Drink.all.select {|d| d.palate == palate}
   end
 
+  private
+
+  def self.correct_and_set_data(drink, drink_array)
+    drink_array[0].each do |method, arg| ###REMOVE THIS ZERO WHEN YOU PULL FROM API!!!
+      if !(["strDrink", "strInstructions"].include?(method))
+        if drink.respond_to?("#{method}") && arg.is_a?(String) && arg.include?("Absolut")
+          drink.send("#{method}=", "Vodka") #Had to hardcode this in
+          #because for almost every drink they list a generic liquor
+          #as an ingredient, except for, frustratingly, certain vodka
+          #drinks, for which they give a brand name Absolut variety
+          #that messes up my algorithm
+        elsif drink.respond_to?("#{method}") && arg.is_a?(String) && (arg.include?("lemon") || arg.include?("Lemon"))
+          drink.send("#{method}=", "Lemon Juice")
+          drink.send("strIngredient9=", "Simple Syrup")
+        elsif drink.respond_to?("#{method}") && arg.is_a?(String) && (arg.include?("Sugar") || arg.include?("Simple"))
+          drink.send("#{method}=", "Simple Syrup")
+        elsif drink.respond_to?("#{method}") && arg.is_a?(String) && arg.include?("Lime")
+          drink.send("#{method}=", "Lime Juice")
+        elsif drink.respond_to?("#{method}") && arg != " " && arg != ""
+          drink.send("#{method}=", arg)
+        end
+      elsif drink.respond_to?("#{method}") && arg != " " && arg != ""
+        drink.send("#{method}=", arg)
+      end
+    end
+  end
+
+  def self.filter_and_set_by_palate(drink)
+    if (drink.all_ingredients.map {|d|d.downcase} & ["cream", "milk", "kahlua", "bailey", "bailey\'s irish cream", "creme de cacao", "white creme de menthe", "hot chocolate", "coffee liqueur", "chocolate liqueur", "pina colada mix"]).any?
+      drink.palate = "creamy"
+    elsif (drink.all_ingredients.map {|d|d.downcase} & ["lime juice", "lemon juice"]).any? && !(drink.all_ingredients.map {|d|d.downcase}.include?("simple syrup")) || (drink.all_ingredients.map {|d|d.downcase} & ["sour mix", "sweet and sour", "pisco"]).any?
+        drink.palate = "bright"
+    elsif (drink.all_ingredients.map {|d|d.downcase} & ["simple syrup", "grenadine", "creme de cassis", "apple juice", "cranberry juice", "pineapple juice", "maraschino cherry", "maraschino liqueur", "grape soda", "kool-aid"]).any?
+      drink.palate = "sweet"
+    else
+      drink.palate = "dry"
+    end
+  end
+
+  def self.concat_ingredients(drink)
+    drink.instance_variables.map{|v|v.to_s.tr('@', '')}.select{|v| v.match(/^strIng/)}.each do |v|
+      drink.all_ingredients << drink.send("#{v}") unless (drink.send("#{v}") == nil || drink.all_ingredients.include?(drink.send("#{v}")))
+    end
+  end
 
 end
