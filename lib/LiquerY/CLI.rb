@@ -35,7 +35,7 @@ class LiquerY::CLI
   def compile
     spinner = ::TTY::Spinner.new("                  [:spinner]".light_blue, format: :bouncing)
     spinner.auto_spin
-    Drink.new_from_hash#(DrinkAPI.new.make_hash)
+    Drink.new_from_hash(DrinkAPI.new.make_hash)
     spinner.stop('Done!'.cyan)
   end
 
@@ -255,7 +255,7 @@ class LiquerY::CLI
       print "Your favorite: ".cyan
       input = gets.chomp
     end until self.safe_input?(input, a) == true
-    User.current_user.liked_drinks << a[input.to_i - 1] unless User.current_user.liked_drinks.include?(a[input.to_i - 1])
+    User.current_user.liked_drinks << a[input.to_i - 1]
     system "clear"
     puts "LiquerY Quiz:".light_blue
     puts "Gotcha! So of those drinks, your favorite is #{User.current_user.recent_choice.strDrink.match(/^[aeiou]/i) ? "an" : "a"} #{User.current_user.recent_choice.strDrink}?".cyan
@@ -274,7 +274,7 @@ class LiquerY::CLI
       print "Your choice: ".light_blue
       input = gets.chomp
     end until self.safe_input?(input, b) == true
-    User.current_user.liked_drinks << b[input.to_i - 1] unless User.current_user.liked_drinks.include?(b[input.to_i - 1])
+    User.current_user.liked_drinks << b[input.to_i - 1]
     User.current_user.add_to_liked_ingredients
     system "clear"
     puts "LiquerY Quiz:".light_blue

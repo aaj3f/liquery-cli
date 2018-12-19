@@ -10,8 +10,8 @@ class Drink
     @@all
   end
 
-  def self.new_from_hash#(hash)
-    DRINK_HASH.each do |id, drink_array|
+  def self.new_from_hash(hash)
+    hash.each do |id, drink_array|
       drink = self.new
       drink.all_ingredients = []
 
@@ -87,7 +87,7 @@ class Drink
   private
 
   def self.correct_and_set_data(drink, drink_array)
-    drink_array[0].each do |method, arg| ###REMOVE THIS ZERO WHEN YOU PULL FROM API!!!
+    drink_array.each do |method, arg| ###REMOVE THIS ZERO WHEN YOU PULL FROM API!!!
       if !(["strDrink", "strInstructions"].include?(method))
         if drink.respond_to?("#{method}") && arg.is_a?(String) && arg.include?("Absolut")
           drink.send("#{method}=", "Vodka") #Had to hardcode this in
