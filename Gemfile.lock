@@ -15,6 +15,7 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
     rake (10.5.0)
+    require_all (1.5.0)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
@@ -42,8 +43,9 @@ DEPENDENCIES
   fuzzy_match
   pry
   rake (~> 10.0)
+  require_all (~> 1.3, >= 1.3.3)
   rspec (~> 3.0)
   tty-spinner
 
 BUNDLED WITH
-   1.17.1
+   1.17.2

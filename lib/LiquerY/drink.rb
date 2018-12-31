@@ -63,9 +63,6 @@ class Drink
     puts "Drink Ingredients:".light_blue
     puts "\n#{drink.strDrink} --".cyan
     puts "#{drink.print_ingredients}".cyan
-    puts "\n--------------------------------------".light_blue
-    puts "\nPress [Enter] to return to the main menu..."
-    STDIN.getch
   end
 
   def self.find_recipe_by_drink_name(name)
@@ -75,9 +72,6 @@ class Drink
     puts "\n#{drink.strDrink} --".cyan
     puts "Ingredients: ".cyan + "#{drink.print_ingredients}".light_blue
     puts "#{drink.strInstructions}".cyan
-    puts "\n--------------------------------------".light_blue
-    puts "\nPress [Enter] to return to the main menu..."
-    STDIN.getch
   end
 
   def self.search_by_palate(palate)

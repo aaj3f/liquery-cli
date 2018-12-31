@@ -1,11 +1,15 @@
-require "LiquerY/version"
-require "LiquerY/database"
-require "LiquerY/DrinkAPI"
-require "LiquerY/drink"
-require "LiquerY/CLI"
-require "LiquerY/User"
+# require "LiquerY/version"
+# require "LiquerY/database"
+# require "LiquerY/DrinkAPI"
+# require "LiquerY/drink"
+# require "LiquerY/CLI"
+# require "LiquerY/User"
+#
+# module LiquerY
+#   class Error < StandardError; end
+#   # Your code goes here...
+# end
 
-module LiquerY
-  class Error < StandardError; end
-  # Your code goes here...
-end
+#################################
+## Moved to config/environment ##
+#################################

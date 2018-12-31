@@ -43,5 +43,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "tty-spinner"
   spec.add_development_dependency "colorize"
   spec.add_development_dependency "fuzzy_match"
-  # spec.add_development_dependency "open-uri"
+
+
 end

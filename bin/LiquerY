@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 
-require "bundler/setup"
-require "LiquerY"
-require "open-uri"
-require "pry"
-require "colorize"
-require "colorized_string"
-require "fuzzy_match"
+#require "bundler/setup"
+require_relative "../config/environment"
+# require "open-uri"
+# require "pry"
+# require "colorize"
+# require "colorized_string"
+# require "fuzzy_match"
 
 LiquerY::CLI.new.call
