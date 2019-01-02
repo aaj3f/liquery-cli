@@ -1,6 +1,3 @@
-require "tty-spinner"
-require "io/console"
-
 class LiquerY::CLI
 
   def call
@@ -73,7 +70,7 @@ class LiquerY::CLI
         system "clear"
         self.list_liked_and_recommended
       when "2"
-        self.list_search_options #need to build and build associated Drink class methods
+        self.list_search_options
       when "3"
         self.drink_quiz
       when "exit"
@@ -274,7 +271,7 @@ class LiquerY::CLI
 
   def offer_main_test
     puts "LiquerY Quiz:".light_blue
-    puts "Listed below are some classic cocktails. Pick the one you enjoy the most!".cyan #1. list test cocktails
+    puts "Listed below are some classic cocktails. Pick the one you enjoy the most!".cyan
     a = Drink.select_for_test.each.with_index(1) { |x, i| puts "#{i}. #{x.strDrink}".center(30)}
     begin
       print "Your favorite: ".cyan
@@ -287,7 +284,7 @@ class LiquerY::CLI
   end
 
   def offer_sub_test
-    puts "\nIf you had to pick one other drink from this smaller list,".light_blue#2. list subtest cocktails
+    puts "\nIf you had to pick one other drink from this smaller list,".light_blue
     puts "what would it be?".light_blue
     b = Drink.select_for_test.each.with_object([]) do |drink, array|
       User.current_user.recent_choice.all_ingredients.each do |ingredient|

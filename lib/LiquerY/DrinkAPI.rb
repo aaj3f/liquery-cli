@@ -1,7 +1,3 @@
-require "open-uri"
-require "JSON"
-require "pry"
-
 class DrinkAPI
   attr_reader :id_array
   def initialize

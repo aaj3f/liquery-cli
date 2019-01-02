@@ -13,6 +13,8 @@ require 'io/console'
 require 'colorize'
 require 'colorized_string'
 require 'fuzzy_match'
+require 'tty-spinner'
+require 'JSON'
 
 module LiquerY
   class Error < StandardError; end
