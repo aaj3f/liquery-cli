@@ -32,7 +32,7 @@ class LiquerY::CLI
   def compile
     spinner = ::TTY::Spinner.new("                  [:spinner]".light_blue, format: :bouncing)
     spinner.auto_spin
-    Drink.new_from_hash(DrinkAPI.new.make_hash)
+    Drink.all
     spinner.stop('Done!'.cyan)
   end
 

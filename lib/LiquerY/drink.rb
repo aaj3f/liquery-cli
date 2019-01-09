@@ -7,10 +7,10 @@ class Drink
   @@all = []
 
   def self.all
-    @@all
+    @@all.empty? ? Drink.new_from_hash : @@all
   end
 
-  def self.new_from_hash(hash)
+  def self.new_from_hash(hash = DrinkAPI.new.make_hash)
     hash.each do |id, drink_array|
       drink = self.new
       drink.all_ingredients = []
@@ -23,6 +23,7 @@ class Drink
 
       @@all << drink unless drink.idDrink == "14133" #To filter out "Cosmopolitan Martini, which for some reason is included in the database twice under different spellings."
     end
+    @@all
   end
 
   def self.select_for_test
@@ -119,7 +120,9 @@ class Drink
 
   def self.concat_ingredients(drink)
     drink.instance_variables.map{|v|v.to_s.tr('@', '')}.select{|v| v.match(/^strIng/)}.each do |v|
-      drink.all_ingredients << drink.send("#{v}") unless (drink.send("#{v}") == nil || drink.all_ingredients.include?(drink.send("#{v}")))
+      unless (drink.send("#{v}") == nil || drink.all_ingredients.include?(drink.send("#{v}")))
+        drink.all_ingredients << drink.send("#{v}")
+      end
     end
   end
 

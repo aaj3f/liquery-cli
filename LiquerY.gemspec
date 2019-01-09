@@ -40,9 +40,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry"
-  spec.add_development_dependency "tty-spinner"
-  spec.add_development_dependency "colorize"
-  spec.add_development_dependency "fuzzy_match"
+  spec.add_dependency "tty-spinner"
+  spec.add_dependency "colorize"
+  spec.add_dependency "fuzzy_match"
 
 
 end

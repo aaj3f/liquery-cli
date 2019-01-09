@@ -8,6 +8,7 @@ require_relative "../lib/LiquerY/DrinkAPI"
 require_relative "../lib/LiquerY/User"
 require_relative "../lib/LiquerY/version"
 
+require 'pry'
 require 'open-uri'
 require 'io/console'
 require 'colorize'
