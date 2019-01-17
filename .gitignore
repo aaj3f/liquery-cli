@@ -6,6 +6,7 @@
 /pkg/
 /spec/reports/
 /tmp/
+/Liquery-0.1.0.gem
 
 # rspec failure tracking
 .rspec_status
