@@ -1,6 +1,3 @@
-require 'bundler'
-Bundler.require
-
 require_relative "../lib/LiquerY/CLI"
 require_relative "../lib/LiquerY/database"
 require_relative "../lib/LiquerY/drink"
