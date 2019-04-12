@@ -5,7 +5,7 @@ require "LiquerY/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "liquery"
-  spec.version       = LiquerY::VERSION
+  spec.version       = Liquery::VERSION
   spec.authors       = ["Andrew Johnson"]
   spec.email         = ["ajohnson.uva@gmail.com"]
 
