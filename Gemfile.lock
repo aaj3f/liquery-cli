@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    liquery (0.8.7)
+    liquery (0.8.8)
       colorize
       fuzzy_match
       tty-spinner
