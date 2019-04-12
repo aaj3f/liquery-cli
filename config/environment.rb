@@ -17,7 +17,7 @@ require 'fuzzy_match'
 require 'tty-spinner'
 require 'JSON'
 
-module LiquerY
+module Liquery
   class Error < StandardError; end
   # Your code goes here...
 end

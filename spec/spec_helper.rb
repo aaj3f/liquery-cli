@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "LiquerY"
+require "liquery"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

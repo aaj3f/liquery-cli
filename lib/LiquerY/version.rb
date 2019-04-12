@@ -1,3 +1,3 @@
-module LiquerY
+module Liquery
   VERSION = "0.4.0"
 end
