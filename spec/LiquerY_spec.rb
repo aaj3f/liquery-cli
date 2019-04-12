@@ -1,4 +1,4 @@
-RSpec.describe LiquerY do
+RSpec.describe Liquery do
   it "has a version number" do
     expect(LiquerY::VERSION).not_to be nil
   end

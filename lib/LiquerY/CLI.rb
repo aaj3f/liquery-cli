@@ -1,4 +1,4 @@
-class LiquerY::CLI
+class Liquery::CLI
 
   def call
     welcome

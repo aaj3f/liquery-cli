@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
 require "bundler/setup"
-require_relative "../config/environment"  
+require_relative "../config/environment"
 
-LiquerY::CLI.new.call
+Liquery::CLI.new.call
