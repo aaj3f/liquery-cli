@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     liquery (0.6.0)
+      bundler (~> 1.17)
       colorize
       fuzzy_match
       tty-spinner
@@ -39,7 +40,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.17)
   liquery!
   pry
   rake (~> 10.0)
