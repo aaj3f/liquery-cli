@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  spec.files         = ['lib/liquery.rb', 'lib/LiquerY/CLI.rb', 'config/environment.rb']
+  spec.files         = ['config/environment.rb', 'lib/liquery.rb', 'lib/LiquerY/CLI.rb']
   spec.executables << 'liquery'
   spec.require_paths = ["lib"]
 

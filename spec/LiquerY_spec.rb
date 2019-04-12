@@ -1,6 +1,6 @@
 RSpec.describe Liquery do
   it "has a version number" do
-    expect(LiquerY::VERSION).not_to be nil
+    expect(Liquery::VERSION).not_to be nil
   end
 
   # it "does something useful" do

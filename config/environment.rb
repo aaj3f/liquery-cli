@@ -13,8 +13,3 @@ require 'colorized_string'
 require 'fuzzy_match'
 require 'tty-spinner'
 require 'JSON'
-
-module Liquery
-  class Error < StandardError; end
-  # Your code goes here...
-end
