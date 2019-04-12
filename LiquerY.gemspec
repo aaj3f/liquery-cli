@@ -26,10 +26,16 @@ Gem::Specification.new do |spec|
   #   raise "RubyGems 2.0 or newer is required to protect against " \
   #     "public gem pushes."
   # end
+  #
+  # require_relative "../lib/LiquerY/CLI"
+  # require_relative "../lib/LiquerY/drink"
+  # require_relative "../lib/LiquerY/DrinkAPI"
+  # require_relative "../lib/LiquerY/User"
+  # require_relative "../lib/LiquerY/version"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  spec.files         = ['config/environment.rb', 'lib/liquery.rb', 'lib/LiquerY/CLI.rb']
+  spec.files         = ['config/environment.rb', 'lib/liquery.rb', 'lib/LiquerY/CLI.rb', 'lib/LiquerY/drink', 'lib/LiquerY/DrinkAPI', 'lib/LiquerY/User', 'lib/LiquerY/version']
   spec.executables << 'liquery'
   spec.require_paths = ["lib"]
 

@@ -1,5 +1,4 @@
 require_relative "../lib/LiquerY/CLI"
-require_relative "../lib/LiquerY/database"
 require_relative "../lib/LiquerY/drink"
 require_relative "../lib/LiquerY/DrinkAPI"
 require_relative "../lib/LiquerY/User"
